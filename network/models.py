@@ -12,3 +12,12 @@ class Post(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField("User", blank=True, related_name="posts_liked")
 
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user": self.user.id,
+            "body": self.body,
+            "timestamp": self.timestamp.strftime("%b %-d %Y, %-I:%M %p"),
+            "likes": [user.id for user in self.likes.all()],
+        }
+

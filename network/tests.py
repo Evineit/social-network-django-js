@@ -1,4 +1,5 @@
-from django.test import TestCase
+import json
+from django.test import TestCase, Client
 from django.core.paginator import Paginator
 from .models import User, Post
 
@@ -18,6 +19,9 @@ class PostTestCase(TestCase):
     def test_posts_count(self):
         u = User.objects.get(username="u1")
         self.assertEqual(u.posts.count(), 2)
+
+    def test_posts_all_count(self):
+        self.assertEqual(Post.objects.all().count(), 4)
     
     def test_posts_timestamp(self):
         u = User.objects.get(username="u1")
@@ -58,6 +62,38 @@ class PostTestCase(TestCase):
         paginator = Paginator(posts, 2)
         self.assertEqual(paginator.count, 4)
         self.assertEqual(paginator.num_pages, 2)
+
+    def test_server_fail_post(self):
+        c = Client()
+        logged_in = c.login(username = 'u1',password="pass1234")
+        self.assertTrue(logged_in)
+        response = c.get('/posts')
+        self.assertEqual(response.status_code, 400)
+        response = c.post('/posts',content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+
+    
+    def test_server_post(self):
+        c = Client()
+        logged_in = c.login(username = 'u1',password="pass1234")
+        self.assertTrue(logged_in)
+        response = c.post('/posts',{'body':'This is a test post'},'application/json')
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(Post.objects.all().count(), 5)
+
+    def test_server_all_ordered_posts(self):
+        c = Client()
+        logged_in = c.login(username = 'u1',password="pass1234")
+        response = c.get('/posts/all')
+        response_posts = json.loads(response.content)
+
+        server_posts = Post.objects.all()
+        server_posts = server_posts.order_by("-timestamp").all()
+        server_posts = [entry.serialize() for entry in server_posts]
+        self.assertEquals(response_posts,server_posts)
+
+
+
 
 
         

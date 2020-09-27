@@ -1,10 +1,11 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User,Post
 
 
 def index(request):
@@ -61,3 +62,35 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+
+def compose(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    data = json.loads(request.body)
+    if not data.get("body"):
+        return JsonResponse({
+            "error": "At least one character required."
+        }, status=400)
+
+    body = data.get("body","")
+    post = Post(
+        user = request.user,
+        body = body
+    )
+    post.save()
+    return JsonResponse({"message": "Post posted successfully."}, status=201)
+
+def all_posts(request):
+    server_posts = Post.objects.order_by('-timestamp').all()
+    # posts = posts.order_by("-timestamp").all()
+    return JsonResponse([post.serialize() for post in server_posts],safe=False) 
+
+# def profile_posts(request):
+#     server_posts = Post.objects.order_by('-timestamp').all()
+#     # posts = posts.order_by("-timestamp").all()
+#     return JsonResponse([post.serialize() for post in server_posts],safe=False) 
+
+# def get_user(request):
+#     user = User.objects.get(username=request.user)
+#     return JsonResponse([post.serialize() for post in server_posts],safe=False) 
+
