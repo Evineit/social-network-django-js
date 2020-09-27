@@ -1,5 +1,23 @@
 {% extends "network/layout.html" %}
+{% load static %}
+
 
 {% block body %}
-    TODO
+    <h1>All Posts</h1>
+    <div>
+        <div>
+            <h2>New Post</h2>
+            <form id="compose_form">
+                <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
+                <input type="submit" class="btn btn-primary"/>
+            </form>
+        </div>
+        <div id="posts-container">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
 {% endblock %}
