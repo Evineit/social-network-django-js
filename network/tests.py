@@ -2,6 +2,8 @@ import json
 from django.test import TestCase, Client
 from django.core.paginator import Paginator
 from .models import User, Post
+from selenium import webdriver
+
 
 # Create your tests here.
 class PostTestCase(TestCase):
@@ -91,6 +93,7 @@ class PostTestCase(TestCase):
         server_posts = server_posts.order_by("-timestamp").all()
         server_posts = [entry.serialize() for entry in server_posts]
         self.assertEquals(response_posts,server_posts)
+
 
 
 

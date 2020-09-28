@@ -4,17 +4,24 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('form').onsubmit = function() {
       const post_body = document.querySelector('#compose-body');
     // Send a POST request to the URL
+    let csrftoken = getCookie('csrftoken');
     fetch('/posts', {
         method: 'POST',
         body: JSON.stringify({
-            body: post_body.value
-        })
+            body: post_body.value,
+        }),
+        headers: { "X-CSRFToken": csrftoken },
+        credentials: "include"
       })
-      .then(response => response.json())
+      .then(response => {
+        response.json()
+        console.log(response)
+      })
       .then(result => {
           // Print result
           console.log(result);
-          // load_all_posts()
+          post_body.value = ''
+          load_all_posts()
       })
       // Catch any errors and log them to the console
       .catch(error => {
@@ -25,6 +32,24 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
 });
+
+// The following function is from 
+// https://docs.djangoproject.com/en/dev/ref/csrf/#ajax
+function getCookie(name) {
+  var cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+          var cookie = cookies[i].trim();
+          // Does this cookie string begin with the name we want?
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
+      }
+  }
+  return cookieValue;
+}
 
 function edit_post(post){
 
@@ -43,6 +68,7 @@ function load_all_posts() {
       
       posts.forEach(post => {
         const element = document.createElement('div');
+        element.style.border = "black 1px solid"
         const poster_name = document.createElement('h6')
         const edit_button = document.createElement('button');
         const body = document.createElement('div');
