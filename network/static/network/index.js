@@ -2,20 +2,19 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("test")
     load_all_posts()
     document.querySelector('form').onsubmit = function() {
-    const body = document.querySelector('#compose-body');
-
+      const post_body = document.querySelector('#compose-body');
     // Send a POST request to the URL
     fetch('/posts', {
         method: 'POST',
         body: JSON.stringify({
-            body: body.value
+            body: post_body.value
         })
       })
       .then(response => response.json())
       .then(result => {
           // Print result
           console.log(result);
-          load_all_posts()
+          // load_all_posts()
       })
       // Catch any errors and log them to the console
       .catch(error => {
