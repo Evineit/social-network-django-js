@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("test")
-    load_all_posts()
+    load_profile_posts()
     document.querySelector('form').onsubmit = function() {
       const post_body = document.querySelector('#compose-body');
     // Send a POST request to the URL
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
           // Print result
           console.log(result);
           post_body.value = ''
-          load_all_posts()
+          load_profile_posts()
       })
       // Catch any errors and log them to the console
       .catch(error => {
@@ -59,14 +59,14 @@ function like_post(post){
 
 }
 
-function load_all_posts() {
-  container = document.querySelector('#posts-container')
-  while (container.firstChild) {
-    container.removeChild(container.firstChild);
-  }
-  fetch('/posts/all')
-  .then(response => response.json())
-  .then(posts => {
+function load_profile_posts() {
+    container = document.querySelector('#posts-container')
+    while (container.firstChild) {
+        container.removeChild(container.firstChild);
+    }
+    fetch('/posts/profile')
+    .then(response => response.json())
+    .then(posts => {
       // Print emails
       // console.log(emails);
       
@@ -82,22 +82,20 @@ function load_all_posts() {
 
         edit_button.className= 'btn btn-secondary'
         poster_name.innerHTML = `${post.user}`;
-        edit_button.addEventListener('click', () => {
+        edit_button.addEventListener('click', (event) => {
           edit_post(post)
         });
         like_button.addEventListener('click', () =>{
             like_post(post)
         })
         poster_name.addEventListener('click', () =>{
-          //TODO:
           //Profile page
         })
         edit_button.innerHTML = 'Edit post'
         // TODO: like changes when liked, like function
         like_button.innerHTML = '❤Like'
         body.innerHTML = `
-        ${post.body}
-        <hr>
+        ${post.body}<hr>
         ${post.timestamp}
         `
         element.append(poster_name)

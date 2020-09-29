@@ -1,0 +1,29 @@
+{% extends "network/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h1>{{ user.username }}</h1>
+    <div>
+        <h6>following {{ user.follows.all.count }}</h6>
+        <h6>followers {{ user.followed_by.all.count }}</h6>
+    </div>
+    <div>
+        {% if user.is_authenticated %}
+        <div>
+            <h2>New Post</h2>
+            <form id="compose-form">
+                {% csrf_token %}
+                <textarea class="form-control" id="compose-body" placeholder="Body"></textarea>
+                <input type="submit" class="btn btn-primary"/>
+            </form>
+        </div>
+        {% endif %}
+        <div id="posts-container">
+
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/profile.js' %}"></script>
+{% endblock %}
