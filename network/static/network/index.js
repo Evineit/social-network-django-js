@@ -71,10 +71,14 @@ function load_all_posts() {
       // console.log(emails);
       
       posts.forEach(post => {
+        console.log(post)
         const element = document.createElement('div');
         element.style.border = "black 1px solid"
         element.style.padding = "10px"
-        const poster_name = document.createElement('h6')
+        const poster_name = document.createElement('a')
+        poster_name.href = `/user/${post.user_id}`
+        poster_name.className = 'h4'
+        poster_name.style = 'display:block; color:black;'
         const edit_button = document.createElement('button');
         const body = document.createElement('div');
         const likes = document.createElement('div');
@@ -87,10 +91,6 @@ function load_all_posts() {
         });
         like_button.addEventListener('click', () =>{
             like_post(post)
-        })
-        poster_name.addEventListener('click', () =>{
-          //TODO:
-          //Profile page
         })
         edit_button.innerHTML = 'Edit post'
         // TODO: like changes when liked, like function

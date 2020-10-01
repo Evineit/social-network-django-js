@@ -82,6 +82,8 @@ class PostTestCase(TestCase):
         response = c.post('/posts',{'body':'This is a test post'},'application/json')
         self.assertEqual(response.status_code, 201)
         self.assertEqual(Post.objects.all().count(), 5)
+        user = User.objects.get(username='u1')
+        self.assertEqual(user.posts.all().count(), 3)
 
     def test_server_all_ordered_posts(self):
         c = Client()
@@ -93,6 +95,15 @@ class PostTestCase(TestCase):
         server_posts = server_posts.order_by("-timestamp").all()
         server_posts = [entry.serialize() for entry in server_posts]
         self.assertEquals(response_posts,server_posts)
+    
+    # def test_server_profile_posts(self):
+    #     c = Client()
+    #     logged_in = c.login(username = 'u1',password="pass1234")
+    #     response = c.get('/posts/profile')
+    #     response_posts = json.loads(response.content)
+    #     self.assertEquals(len(response_posts),3)
+
+    
 
 
 

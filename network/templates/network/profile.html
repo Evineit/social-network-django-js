@@ -2,13 +2,13 @@
 {% load static %}
 
 {% block body %}
-    <h1>{{ user.username }}</h1>
+    <h1>{{ profile_user.username }}</h1>
     <div>
-        <h6>following {{ user.follows.all.count }}</h6>
-        <h6>followers {{ user.followed_by.all.count }}</h6>
+        <h6>following {{ profile_user.follows.all.count }}</h6>
+        <h6>followers {{ profile_user.followed_by.all.count }}</h6>
     </div>
     <div>
-        {% if user.is_authenticated %}
+        {% if user.id == profile_user.id and user.is_authenticated%}
         <div>
             <h2>New Post</h2>
             <form id="compose-form">

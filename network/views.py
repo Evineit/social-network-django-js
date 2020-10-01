@@ -85,21 +85,31 @@ def all_posts(request):
     # posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in server_posts],safe=False) 
 
-def profile_posts(request):
+def profile_posts(request,userid):
     try:
-            user = User.objects.get(username=request.user)
+            user = User.objects.get(id=userid)
     except User.DoesNotExist:
         return JsonResponse({
-                "error": f"User with username {request.user} does not exist."
+                "error": f"User with id {userid} does not exist."
         }, status=400)
     server_posts = user.posts.order_by('-timestamp').all()
     return JsonResponse([post.serialize() for post in server_posts],safe=False) 
 
-# def get_user(request):
-#     user = User.objects.get(username=request.user)
-#     return JsonResponse([post.serialize() for post in server_posts],safe=False) 
+
+def profile_posts_by_name(request,username):
+    user = User.objects.get(username=username)
+    return profile_posts(request, user.id)
+
 
 def profile(request, userid):
-    return render(request, "network/profile.html")
+    try:
+            user = User.objects.get(id=userid)
+    except User.DoesNotExist:
+        return JsonResponse({
+                "error": f"User with id {userid} does not exist."
+        }, status=400)
+    return render(request, "network/profile.html",{
+        "profile_user":user
+    })
 
 
