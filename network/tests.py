@@ -18,6 +18,7 @@ class PostTestCase(TestCase):
         Post.objects.create(user=u1, body="City B")
         Post.objects.create(user=u2, body="City C")
         Post.objects.create(user=u3, body="City D")
+        
     def test_posts_count(self):
         u = User.objects.get(username="u1")
         self.assertEqual(u.posts.count(), 2)
@@ -96,12 +97,23 @@ class PostTestCase(TestCase):
         server_posts = [entry.serialize() for entry in server_posts]
         self.assertEquals(response_posts,server_posts)
     
-    # def test_server_profile_posts(self):
-    #     c = Client()
-    #     logged_in = c.login(username = 'u1',password="pass1234")
-    #     response = c.get('/posts/profile')
-    #     response_posts = json.loads(response.content)
-    #     self.assertEquals(len(response_posts),3)
+    def test_server_follow(self):
+        c = Client()
+        logged_in = c.login(username = 'u2',password="pass1234")
+        self.assertTrue(logged_in)
+        response = c.post('/user/follow',{'user_id':'1'},'application/json')
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.get(username='u2')
+        self.assertEqual(user.follows.all().count(), 1)
+
+    def test_server_unfollow(self):
+        c = Client()
+        logged_in = c.login(username = 'u2',password="pass1234")
+        self.assertTrue(logged_in)
+        response = c.post('/user/unfollow',{'user_id':'1'},'application/json')
+        self.assertEqual(response.status_code, 201)
+        user = User.objects.get(username='u2')
+        self.assertEqual(user.follows.all().count(), 0)
 
     
 

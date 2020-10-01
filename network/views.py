@@ -100,6 +100,40 @@ def profile_posts_by_name(request,username):
     user = User.objects.get(username=username)
     return profile_posts(request, user.id)
 
+def follow(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    data = json.loads(request.body)
+    if not data.get("user_id"):
+        return JsonResponse({
+            "error": "User id to followed required."
+        }, status=400)
+    user = request.user
+    follower_id = data.get("user_id")
+    follower = User.objects.get(pk=follower_id)
+    if follower not in user.follows.all():
+        user.follows.add(follower)
+    return JsonResponse({"message": "Follower added successfully."}, status=201)
+
+
+        
+
+def unfollow(request):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    data = json.loads(request.body)
+    if not data.get("user_id"):
+        return JsonResponse({
+            "error": "User id to followed required."
+        }, status=400)
+    user = request.user
+    follower_id = data.get("user_id")
+    follower = User.objects.get(pk=follower_id)
+
+    if follower in user.follows.all():
+        user.follow.removes(follower)
+    return JsonResponse({"message": "Follower removed successfully."}, status=201)
+
 
 def profile(request, userid):
     try:
