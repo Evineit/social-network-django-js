@@ -4,6 +4,7 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
+from datetime import datetime
 
 from .models import User,Post
 
@@ -100,6 +101,16 @@ def profile_posts_by_name(request,username):
     user = User.objects.get(username=username)
     return profile_posts(request, user.id)
 
+def following_posts(request):
+    user = request.user
+    posts = []
+    for follow in user.follows.all():
+        follow_posts = [post.serialize() for post in follow.posts.all()]
+        for post in follow_posts:
+            posts.append(post)
+    posts.sort(key= lambda post: post["id"], reverse=True)
+    return JsonResponse(posts,safe=False) 
+
 def follow(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -150,4 +161,7 @@ def profile(request, userid):
         "profile_user":user
     })
 
-
+def following(request):
+    user = request.user
+    return render(request, "network/following.html"
+    )
