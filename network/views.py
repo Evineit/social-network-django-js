@@ -1,5 +1,6 @@
 import json
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
@@ -64,6 +65,7 @@ def register(request):
     else:
         return render(request, "network/register.html")
 
+@login_required
 def compose(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -101,6 +103,7 @@ def profile_posts_by_name(request,username):
     user = User.objects.get(username=username)
     return profile_posts(request, user.id)
 
+@login_required
 def following_posts(request):
     user = request.user
     posts = []
@@ -111,6 +114,7 @@ def following_posts(request):
     posts.sort(key= lambda post: datetime.strptime(post["timestamp"],'%b %d %Y, %I:%M %p'), reverse=True)
     return JsonResponse(posts,safe=False) 
 
+@login_required
 def follow(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -130,9 +134,7 @@ def follow(request):
         user.follows.add(follower)
     return JsonResponse({"message": "Follower added successfully."}, status=201)
 
-
-        
-
+@login_required
 def unfollow(request):
     if request.method != "POST":
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -161,6 +163,7 @@ def profile(request, userid):
         "profile_user":user
     })
 
+@login_required
 def following(request):
     user = request.user
     return render(request, "network/following.html"
