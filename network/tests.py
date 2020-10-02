@@ -106,6 +106,13 @@ class PostTestCase(TestCase):
         user = User.objects.get(username='u2')
         self.assertEqual(user.follows.all().count(), 1)
 
+    def test_server_self_follow(self):
+        c = Client()
+        logged_in = c.login(username = 'u2',password="pass1234")
+        self.assertTrue(logged_in)
+        response = c.post('/user/follow',{'username':'u2'},'application/json')
+        self.assertEqual(response.status_code, 403)
+
     def test_server_unfollow(self):
         c = Client()
         logged_in = c.login(username = 'u2',password="pass1234")

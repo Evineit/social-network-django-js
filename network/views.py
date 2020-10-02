@@ -111,6 +111,10 @@ def follow(request):
     user = request.user
     follower_id = data.get("username")
     follower = User.objects.get(username = follower_id)
+    if user.id == follower.id:
+        return JsonResponse({
+            "error": "User and follower must be different."
+        }, status=403)
     if follower not in user.follows.all():
         user.follows.add(follower)
     return JsonResponse({"message": "Follower added successfully."}, status=201)
