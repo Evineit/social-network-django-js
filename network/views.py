@@ -108,7 +108,7 @@ def following_posts(request):
         follow_posts = [post.serialize() for post in follow.posts.all()]
         for post in follow_posts:
             posts.append(post)
-    posts.sort(key= lambda post: post["id"], reverse=True)
+    posts.sort(key= lambda post: datetime.strptime(post["timestamp"],'%b %d %Y, %I:%M %p'), reverse=True)
     return JsonResponse(posts,safe=False) 
 
 def follow(request):
