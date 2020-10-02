@@ -1,7 +1,11 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("test")
     load_profile_posts()
-    document.querySelector('form').onsubmit = function() {
+    load_follow_button()
+    
+    const form = document.querySelector('form');
+    if (!form) return false;
+    form.onsubmit = function() {
       const post_body = document.querySelector('#compose-body');
     // Send a POST request to the URL
     let csrftoken = getCookie('csrftoken');
@@ -30,7 +34,6 @@ document.addEventListener('DOMContentLoaded', function() {
       // Prevent default submission
       return false;
     }
-
 });
 
 // The following function is from 
@@ -91,7 +94,7 @@ function load_profile_posts() {
         });
         like_button.addEventListener('click', () =>{
             like_post(post)
-        })
+        });
         edit_button.innerHTML = 'Edit post'
         // TODO: like changes when liked, like function
         like_button.innerHTML = '❤Like'
@@ -108,4 +111,83 @@ function load_profile_posts() {
       });
 
   });
+}
+
+function load_follow_button() {
+  button = document.querySelector('#follow')
+  if (!button) {
+    return false
+  }
+  profile_user = document.querySelector('h1').innerHTML
+  if (button.innerHTML == 'follow'){
+    button.onclick = function(){
+      follow_user(profile_user)
+    }
+  }else if (button.innerHTML == 'unfollow') {
+    button.onclick = function(){
+      unfollow_user(profile_user)
+    }   
+  }
+}
+
+function follow_user(username) {
+  button = document.querySelector('#follow')
+  let csrftoken = getCookie('csrftoken');
+  // button.innerHTML = 'unfollow'
+  fetch('/user/follow', {
+    method: 'POST',
+    headers: { "X-CSRFToken": csrftoken },
+    body: JSON.stringify({
+        username: username
+    })
+  })
+  .then(response => {
+      console.log(response)
+  })
+  .then(result => {
+      // Print result
+      console.log(result);
+      console.log("reload follow button")
+      // load_follow_button()
+      location.reload()
+  })
+  // Catch any errors and log them to the console
+  .catch(error => {
+      console.log('Error:', error);
+  });
+  // Prevent default submission
+  return false;
+  
+}
+
+    function unfollow_user(username) {
+  button = document.querySelector('#follow')
+  let csrftoken = getCookie('csrftoken');
+  // button.innerHTML = 'follow'
+
+  fetch('/user/unfollow', {
+    method: 'POST',
+    headers: { "X-CSRFToken": csrftoken },
+    body: JSON.stringify({
+        username: username
+    })
+  })
+  .then(response => {
+      console.log(response)
+  })
+  .then(result => {
+      // Print result
+      console.log(result);
+      console.log("reload follow button")
+      // load_follow_button()
+      location.reload()
+
+  })
+  // Catch any errors and log them to the console
+  .catch(error => {
+      console.log('Error:', error);
+  });
+  // Prevent default submission
+  return false;
+  
 }

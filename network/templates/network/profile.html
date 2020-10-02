@@ -6,6 +6,13 @@
     <div>
         <h6>following {{ profile_user.follows.all.count }}</h6>
         <h6>followers {{ profile_user.followed_by.all.count }}</h6>
+        {% if user.id != profile_user.id and user.is_authenticated%}
+            {% if user not in profile_user.followed_by.all %}
+            <button id="follow" class="btn btn-secondary">follow</button>
+            {% else %}
+            <button id="follow" class="btn btn-secondary">unfollow</button>
+            {% endif %}
+        {% endif %}
     </div>
     <div>
         {% if user.id == profile_user.id and user.is_authenticated%}
