@@ -7,11 +7,18 @@ from django.shortcuts import render
 from django.urls import reverse
 from datetime import datetime
 
+from django.core.paginator import Paginator
 from .models import User,Post
 
 
 def index(request):
-    return render(request, "network/index.html")
+    server_posts = Post.objects.order_by('-timestamp').all()
+    paginator = Paginator([post.serialize() for post in server_posts], 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, "network/index.html",{
+        "page_obj":page_obj
+    })
 
 
 def login_view(request):
@@ -85,8 +92,10 @@ def compose(request):
 
 def all_posts(request):
     server_posts = Post.objects.order_by('-timestamp').all()
-    # posts = posts.order_by("-timestamp").all()
-    return JsonResponse([post.serialize() for post in server_posts],safe=False) 
+    paginator = Paginator([post.serialize() for post in server_posts], 10)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return JsonResponse(page_obj.object_list,safe=False) 
 
 def profile_posts(request,userid):
     try:
@@ -154,17 +163,33 @@ def unfollow(request):
 
 def profile(request, userid):
     try:
-            user = User.objects.get(id=userid)
+        user = User.objects.get(id=userid)
     except User.DoesNotExist:
         return JsonResponse({
                 "error": f"User with id {userid} does not exist."
         }, status=400)
+    server_posts = user.posts.order_by('-timestamp').all()
+    paginator = Paginator([post.serialize() for post in server_posts], 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     return render(request, "network/profile.html",{
-        "profile_user":user
+        "profile_user":user,
+        "page_obj":page_obj
     })
 
 @login_required
 def following(request):
     user = request.user
-    return render(request, "network/following.html"
+    posts = []
+    for follow in user.follows.all():
+        follow_posts = [post.serialize() for post in follow.posts.all()]
+        for post in follow_posts:
+            posts.append(post)
+    posts.sort(key= lambda post: datetime.strptime(post["timestamp"],'%b %d %Y, %I:%M %p'), reverse=True)
+    paginator = Paginator(posts, 2)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, "network/following.html",{
+        "page_obj":page_obj
+    }
     )

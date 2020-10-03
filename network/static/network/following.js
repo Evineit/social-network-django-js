@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("test")
-    load_all_posts()
+    // load_all_posts()
     document.querySelector('form').onsubmit = function() {
       const post_body = document.querySelector('#compose-body');
     // Send a POST request to the URL

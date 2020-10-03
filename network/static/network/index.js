@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("test")
-    load_all_posts()
+    // load_all_posts(1)
     document.querySelector('form').onsubmit = function() {
       const post_body = document.querySelector('#compose-body');
     // Send a POST request to the URL
@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', function() {
           // Print result
           console.log(result);
           post_body.value = ''
-          load_all_posts()
+          load_all_posts(1)
       })
       // Catch any errors and log them to the console
       .catch(error => {
@@ -59,12 +59,12 @@ function like_post(post){
 
 }
 
-function load_all_posts() {
+function load_all_posts(page) {
   container = document.querySelector('#posts-container')
   while (container.firstChild) {
     container.removeChild(container.firstChild);
   }
-  fetch('/posts/all')
+  fetch(`/posts/all?page=${page}`)
   .then(response => response.json())
   .then(posts => {
       // Print emails

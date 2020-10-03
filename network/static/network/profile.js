@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', function() {
     console.log("test")
-    load_profile_posts()
+    // load_profile_posts()
     load_follow_button()
     
     const form = document.querySelector('form');
