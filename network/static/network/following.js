@@ -53,7 +53,8 @@ function getCookie(name) {
 }
 
 function edit_post(post){
-
+  console.log(post)
+  console.log("Edit test")
 } 
 
 function like_post(post){
@@ -67,9 +68,14 @@ function load_all_posts() {
         console.log(post)
         const edit_button = post.querySelector('button[name="edit"]')
         const like_button = post.querySelector('button[name="like"]')
-        edit_button.addEventListener('click', () => {
-          edit_post(post)
-        })
+
+        if (edit_button){
+          console.log(edit_button)
+          edit_button.addEventListener('click', () => {
+            edit_post(post)
+          })
+        }
+        console.log(like_button)
         like_button.addEventListener('click', () =>{
           like_post(post)
         })

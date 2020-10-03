@@ -1,18 +1,17 @@
 <div id="posts-container">
     {% for post in page_obj %}
     <div class="post" style="border:black 1px solid">
-        <a href="{% url 'profile' post.user_id %}" class="h4">{{post.user}}</a>
+        <a href="{% url 'profile' post.user_id %}" class="h4 post-user">{{post.user}}</a>
         {% if user.id == post.user_id %}
-        <button name="edit" class="btn btn-secondary">Edit post</button>
+        <button name="edit" data-post-id="{{post.id}}" class="btn btn-secondary">Edit post</button>
         {% endif %}
-        <div>
-            {{post.body}}
+        <div class="post-body">{{post.body}}</div>
+        <div class="post-foot">
             <hr>
             {{post.timestamp}}
-        </div>
-        <div>
             <button name="like" class="btn btn-outline-secondary">❤Like</button>
         </div>
+        
     </div> 
     {% endfor %}
 

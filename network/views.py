@@ -13,7 +13,7 @@ from .models import User,Post
 
 def index(request):
     server_posts = Post.objects.order_by('-timestamp').all()
-    paginator = Paginator([post.serialize() for post in server_posts], 2)
+    paginator = Paginator([post.serialize() for post in server_posts], 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, "network/index.html",{
@@ -89,6 +89,26 @@ def compose(request):
     )
     post.save()
     return JsonResponse({"message": "Post posted successfully."}, status=201)
+
+@login_required
+def edit(request,post_id):
+    if request.method != "PUT":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    data = json.loads(request.body)
+    if not data.get("body"):
+        return JsonResponse({
+            "error": "New body required."
+        }, status=400)
+    user = request.user
+    new_body = data.get("body")
+    post = Post.objects.get(pk=post_id)
+    if user.id != post.user.id:
+        return JsonResponse({
+            "error": "User to edit must be the post author."
+        }, status=403)
+    post.body = new_body
+    post.save()
+    return JsonResponse({"message": "Post edited successfully."}, status=201)
 
 def all_posts(request):
     server_posts = Post.objects.order_by('-timestamp').all()
@@ -169,7 +189,7 @@ def profile(request, userid):
                 "error": f"User with id {userid} does not exist."
         }, status=400)
     server_posts = user.posts.order_by('-timestamp').all()
-    paginator = Paginator([post.serialize() for post in server_posts], 2)
+    paginator = Paginator([post.serialize() for post in server_posts], 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, "network/profile.html",{
@@ -186,7 +206,7 @@ def following(request):
         for post in follow_posts:
             posts.append(post)
     posts.sort(key= lambda post: datetime.strptime(post["timestamp"],'%b %d %Y, %I:%M %p'), reverse=True)
-    paginator = Paginator(posts, 2)
+    paginator = Paginator(posts, 10)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     return render(request, "network/following.html",{
