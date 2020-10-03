@@ -6,16 +6,18 @@
     <h1>Following Posts</h1>
     <div id="posts-container">
         {% for post in page_obj %}
-        <div style="border:black 1px solid">
+        <div class="post" style="border:black 1px solid">
             <a href="{% url 'profile' post.user_id %}" class="h4">{{post.user}}</a>
-            <button class="btn btn-secondary">Edit post</button>
+            {% if user.id == post.user_id %}
+            <button name="edit" class="btn btn-secondary">Edit post</button>
+            {% endif %}
             <div>
                 {{post.body}}
                 <hr>
                 {{post.timestamp}}
             </div>
             <div>
-                <button>❤Like</button>
+                <button name="like" class="btn btn-outline-secondary">❤Like</button>
             </div>
         </div> 
         {% endfor %}
