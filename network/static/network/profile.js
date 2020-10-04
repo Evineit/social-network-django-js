@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("test")
     load_profile_posts()
     load_follow_button()
-    load_likes_buttons()
+    load_all_like_buttons()
     
     const form = document.querySelector('form');
     if (!form) return false;
@@ -26,7 +26,9 @@ document.addEventListener('DOMContentLoaded', function() {
           // Print result
           console.log(result);
           post_body.value = ''
-          load_profile_posts()
+          // load_profile_posts()
+          location.reload()
+
       })
       // Catch any errors and log them to the console
       .catch(error => {
@@ -229,9 +231,14 @@ function follow_user(username) {
   
 }
 
-function load_likes_buttons() {
+function load_all_like_buttons() {
   let posts = document.querySelectorAll('.post')
   posts.forEach(post => {
+    reload_like_button(post)
+  })
+}
+
+function reload_like_button(post) {
     const post_id = post.querySelector('button[name="edit"]').dataset.postId
     const counter = post.querySelector('.like-counter')
     let like_button = post.querySelector('button[name="like"]')
@@ -251,7 +258,6 @@ function load_likes_buttons() {
           }
         }
       });
-  })
 }
 
 function like_post(post) {
@@ -267,11 +273,8 @@ function like_post(post) {
       console.log(response)
   })
   .then(result => {
-      // Print result
-      console.log(result);
-      console.log("like button")
-      // load_follow_button()
-      location.reload()
+      // load_likes_buttons()
+      load_all_like_buttons()
   })
   // Catch any errors and log them to the console
   .catch(error => {
@@ -291,14 +294,11 @@ function dislike_post(post) {
     headers: { "X-CSRFToken": csrftoken }
   })
   .then(response => {
-      console.log(response)
+      console.log("response")
   })
   .then(result => {
-      // Print result
-      console.log(result);
-      console.log("like button")
-      // load_follow_button()
-      location.reload()
+    // load_likes_buttons()
+    load_all_like_buttons()
   })
   // Catch any errors and log them to the console
   .catch(error => {

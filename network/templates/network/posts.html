@@ -3,14 +3,14 @@
     <div class="post" style="border:black 1px solid">
         <a href="{% url 'profile' post.user_id %}" class="h4 post-user">{{post.user}}</a>
         {% if user.id == post.user_id %}
-        <button name="edit" data-post-id="{{post.id}}" class="btn btn-secondary">Edit post</button>
+        <button name="edit" data-post-id="{{post.id}}" class="btn btn-outline-secondary">Edit post</button>
         {% endif %}
         <div class="post-body">{{post.body}}</div>
         <div class="post-foot">
             <hr>
             {{post.timestamp}}
             {% if user.is_authenticated%}
-            <button name="like" class="btn btn-outline-secondary">❤Like</button>
+            <button name="like" data-post-id="{{post.id}}" class="btn btn-outline-secondary">❤Like</button>
             <span class="like-counter">0</span>
             {% endif %}
         </div>
