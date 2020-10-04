@@ -180,6 +180,39 @@ def unfollow(request):
         user.follows.remove(follower)
     return JsonResponse({"message": "Follower removed successfully."}, status=201)
 
+@login_required
+def like(request, post_id):
+    user = request.user
+    post = Post.objects.get(pk=post_id)
+    if request.method == "POST":  
+        if user in post.likes.all():
+            return JsonResponse({
+                "error": "User already likes post."
+            }, status=403)
+        post.likes.add(user)
+        return JsonResponse({"message": "Post liked successfully."}, status=201)
+    elif request.method == "GET":
+        counter = post.likes.all().count()
+        liked = user in post.likes.all()
+        return JsonResponse({
+            "counter": counter,
+            "liked":liked
+        }, status=201)
+    else:
+        return JsonResponse({"error": "POST or GET request required."}, status=400)
+
+@login_required
+def dislike(request, post_id):
+    if request.method != "POST":
+        return JsonResponse({"error": "POST request required."}, status=400)
+    user = request.user
+    post = Post.objects.get(pk=post_id)
+    if user not in post.likes.all():
+        return JsonResponse({
+            "error": "User doesn't likes post."
+        }, status=403)
+    post.likes.remove(user)
+    return JsonResponse({"message": "Post disliked successfully."}, status=201)
 
 def profile(request, userid):
     try:

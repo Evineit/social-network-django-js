@@ -2,6 +2,7 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log("test")
     load_profile_posts()
     load_follow_button()
+    load_likes_buttons()
     
     const form = document.querySelector('form');
     if (!form) return false;
@@ -116,10 +117,6 @@ function load_editpost(post){
   
 } 
 
-function like_post(post){
-
-}
-
 function load_profile_posts() {
   container = document.querySelector('#posts-container')
   let posts = document.querySelectorAll('.post')
@@ -144,9 +141,9 @@ function load_profile_posts() {
       })
     }
     console.log(like_button)
-    like_button.addEventListener('click', () => {
-      like_post(post)
-    })
+    // like_button.addEventListener('click', () => {
+    //   like_post(post)
+    // })
     // edit_button.innerHTML = 'Edit post'
     // // TODO: like changes when liked, like function
     // like_button.innerHTML = '❤Like'
@@ -230,4 +227,83 @@ function follow_user(username) {
   // Prevent default submission
   return false;
   
+}
+
+function load_likes_buttons() {
+  let posts = document.querySelectorAll('.post')
+  posts.forEach(post => {
+    const post_id = post.querySelector('button[name="edit"]').dataset.postId
+    const counter = post.querySelector('.like-counter')
+    let like_button = post.querySelector('button[name="like"]')
+    fetch('/posts/' + post_id + '/like')
+      .then(response => response.json())
+      .then(like_info => {
+        counter.innerHTML = like_info.counter
+        if (like_info.liked) {
+          like_button.innerHTML = '💔Dislike'
+          like_button.onclick = function () {
+            dislike_post(post)
+          }
+        } else {
+          like_button.innerHTML = '❤Like'
+          like_button.onclick = function () {
+            like_post(post)
+          }
+        }
+      });
+  })
+}
+
+function like_post(post) {
+  button = document.querySelector('#follow')
+  const post_id = post.querySelector('button[name="edit"]').dataset.postId
+  let csrftoken = getCookie('csrftoken');
+  // button.innerHTML = 'unfollow'
+  fetch('/posts/'+post_id+'/like', {
+    method: 'POST',
+    headers: { "X-CSRFToken": csrftoken }
+  })
+  .then(response => {
+      console.log(response)
+  })
+  .then(result => {
+      // Print result
+      console.log(result);
+      console.log("like button")
+      // load_follow_button()
+      location.reload()
+  })
+  // Catch any errors and log them to the console
+  .catch(error => {
+      console.log('Error:', error);
+  });
+  // Prevent default submission
+  return false;
+}
+
+function dislike_post(post) {
+  button = document.querySelector('#follow')
+  const post_id = post.querySelector('button[name="edit"]').dataset.postId
+  let csrftoken = getCookie('csrftoken');
+  // button.innerHTML = 'unfollow'
+  fetch('/posts/'+post_id+'/dislike', {
+    method: 'POST',
+    headers: { "X-CSRFToken": csrftoken }
+  })
+  .then(response => {
+      console.log(response)
+  })
+  .then(result => {
+      // Print result
+      console.log(result);
+      console.log("like button")
+      // load_follow_button()
+      location.reload()
+  })
+  // Catch any errors and log them to the console
+  .catch(error => {
+      console.log('Error:', error);
+  });
+  // Prevent default submission
+  return false;
 }

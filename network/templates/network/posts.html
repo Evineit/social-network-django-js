@@ -9,7 +9,10 @@
         <div class="post-foot">
             <hr>
             {{post.timestamp}}
+            {% if user.is_authenticated%}
             <button name="like" class="btn btn-outline-secondary">❤Like</button>
+            <span class="like-counter">0</span>
+            {% endif %}
         </div>
         
     </div> 
